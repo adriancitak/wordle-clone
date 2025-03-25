@@ -52,3 +52,92 @@ document.addEventListener('keyup', (e) => {
         insertLetter(pressedKey)
     }
 })
+
+
+function insertLetter (pressedKey){
+    if (nextLetter === 5){
+        return
+    }
+    pressedKey = pressedKey.toLowerCase();
+
+    let row = document.getElementsByClassName("letter-row")[6 - guessesRemaining];
+    let box = row.children[nextLetter];
+    box.textContent = pressedKey;
+    box.classList.add('filled-box');
+    currentGuess.push(pressedKey);
+    nextLetter += 1;
+}
+
+function deleteLetter(){
+    let row = document.getElementsByClassName('letter-row')[6 - guessesRemaining];
+    let box = row.children[nextLetter - 1];
+    box.textContent = '';
+    box.classList.remove('filled-box');
+    currentGuess.pop();
+    nextLetter -= 1
+}
+
+function checkGuess() {
+    let row = document.getElementsByClassName('letter-row')[6 - guessesRemaining];
+    let guessString = '';
+    let rightGuess = Array.from(rightGuessString);
+
+    for (const val of currentGuess){
+        guessString += val;
+    }
+
+    if (guessString.length != 5){
+        alert('You need 5 letters!');
+        return
+    }
+
+    if (!WORDS.includes(guessString)){
+        alert('Word is not in the list!')
+        return
+    }
+
+    for (let i = 0; i < 5; i++){
+        let letterColor = '';
+        let box = row.children[i];
+        let letter = currentGuess[i];
+
+        let letterPosition = rightGuess.indexOf(currentGuess[i]);
+        
+        if (letterPosition === -1){
+            letterColor = 'grey';
+        } else {
+            if (currentGuess[i] === rightGuess[i]){
+                letterColor = 'green';
+            } else {
+                letterColor = 'yellow';
+            }
+
+            rightGuess[letterPosition] = '#';
+        }
+
+        let delay = 250 * i;
+
+        setTimeout(() => {
+            box.style.backgroundColor = letterColor;
+            shadeKeyBoard(letter, letterColor)
+            }, delay)
+        }
+
+        if (guessString === rightGuessString){
+            alert('You guessed right! You won!')
+            guessesRemaining = 0;
+            return
+        } else {
+            guessesRemaining -= 1;
+            currentGuess = [];
+            nextLetter = 0;
+
+            if (guessesRemaining === 0){
+                alert('You ran out of guesses. You lost!')
+                alert(`The right word was: ${rightGuessString}`)
+            }
+
+        }
+
+    
+    }
